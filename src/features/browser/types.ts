@@ -1,6 +1,6 @@
 export interface BrowserTab {
   id: string;
-  url: string;
+  url?: string;
   title: string;
   favicon?: string;
   isLoading: boolean;
