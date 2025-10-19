@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import {
   FLUSH,
   PAUSE,
@@ -11,21 +11,13 @@ import {
   REHYDRATE,
 } from "redux-persist";
 
-import browserReducer from "../features/browser/browserSlice";
-import scriptsReducer from "../features/scripts/scriptsSlice";
-import settingsReducer from "../features/settings/settingsSlice";
+import { rootReducer } from "./rootReducer";
 
 const persistConfig = {
   key: "root",
   storage: AsyncStorage,
   whitelist: ["scripts", "settings"],
 };
-
-const rootReducer = combineReducers({
-  browser: browserReducer,
-  scripts: scriptsReducer,
-  settings: settingsReducer,
-});
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
@@ -44,3 +36,6 @@ export const persistor = persistStore(store);
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export { useAppDispatch } from "../hooks/useAppDispatch";
+export { useAppSelector } from "../hooks/useAppSelector";
