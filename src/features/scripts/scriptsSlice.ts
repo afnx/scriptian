@@ -15,7 +15,7 @@ export const addUserScript = createAsyncThunk<
     url?: string;
     code?: string;
     name: string;
-    description: string;
+    description?: string;
     urlPatterns: string[];
     runAt: "document-start" | "document-ready" | "document-end";
   },
