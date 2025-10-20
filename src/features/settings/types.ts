@@ -2,6 +2,6 @@ export interface SettingsState {
   scriptsEnabled: boolean;
   maxExecutionTime: number;
   logExecutions: boolean;
-  theme: "light" | "dark";
+  theme: "light" | "dark" | "system";
   autoUpdateScripts: boolean;
 }

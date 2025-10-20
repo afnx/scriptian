@@ -5,7 +5,7 @@ const initialState: SettingsState = {
   scriptsEnabled: true,
   maxExecutionTime: 5000,
   logExecutions: true,
-  theme: "light",
+  theme: "system",
   autoUpdateScripts: false,
 };
 
@@ -29,7 +29,7 @@ const settingsSlice = createSlice({
       state.logExecutions = !state.logExecutions;
     },
 
-    setTheme: (state, action: PayloadAction<"light" | "dark">) => {
+    setTheme: (state, action: PayloadAction<"light" | "dark" | "system">) => {
       state.theme = action.payload;
     },
 
