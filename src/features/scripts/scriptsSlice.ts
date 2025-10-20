@@ -6,7 +6,8 @@ import {
 } from "@reduxjs/toolkit";
 import { importScript } from "./api/scriptApi";
 import { ScriptExecution, ScriptsState, UserScript } from "./types";
-import { validateScript } from "./utils";
+import { validateUrlPattern } from "./utils/patternUtils";
+import { validateScript } from "./utils/scriptValidator";
 
 // Async thunk to add a new user script by importing from a URL or direct input
 export const addUserScript = createAsyncThunk<
@@ -22,6 +23,17 @@ export const addUserScript = createAsyncThunk<
   { rejectValue: string }
 >("scripts/createUserScript", async (args, { rejectWithValue }) => {
   try {
+    // Validate URL patterns
+    const urlPatternValidations = args.urlPatterns.map(validateUrlPattern);
+    const invalidPatterns = urlPatternValidations.filter(
+      (result) => !result.valid
+    );
+    if (invalidPatterns.length > 0) {
+      return rejectWithValue(
+        invalidPatterns.map((result) => result.error).join(", ")
+      );
+    }
+
     let code: string | undefined;
 
     if (args.code) {
@@ -33,9 +45,11 @@ export const addUserScript = createAsyncThunk<
     }
 
     // Validate the script code before creating the script
-    const validation = validateScript(code);
-    if (!validation.valid) {
-      return rejectWithValue(validation.error ?? "Unknown validation error");
+    const scriptValidation = validateScript(code);
+    if (!scriptValidation.valid) {
+      return rejectWithValue(
+        scriptValidation.error ?? "Unknown validation error"
+      );
     }
 
     const now = new Date().toISOString();

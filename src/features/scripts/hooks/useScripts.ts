@@ -10,7 +10,7 @@ import {
   updateUserScript,
 } from "../scriptsSlice";
 import { ScriptExecution, UserScript } from "../types";
-import { createPatternRegex } from "../utils";
+import { createPatternRegex } from "../utils/patternUtils";
 
 export const useScripts = () => {
   const dispatch = useAppDispatch();
