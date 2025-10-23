@@ -36,7 +36,11 @@ export const useSettings = () => {
     dispatch(toggleAutoUpdateScripts());
   };
 
-  // Theme settings
+  /**
+   * Switches the application's theme to the specified mode.
+   *
+   * @param theme - The desired theme mode to apply (e.g., 'system', 'light', 'dark').
+   */
   const switchTheme = (theme: ThemeMode) => {
     dispatch(setTheme(theme));
   };
