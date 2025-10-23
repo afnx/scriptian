@@ -1,7 +1,9 @@
+export type ThemeMode = "light" | "dark" | "system";
+
 export interface SettingsState {
   scriptsEnabled: boolean;
   maxExecutionTime: number;
   logExecutions: boolean;
-  theme: "light" | "dark" | "system";
+  theme: ThemeMode;
   autoUpdateScripts: boolean;
 }

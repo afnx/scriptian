@@ -8,7 +8,7 @@ import {
   toggleScriptsEnabled,
   updateSettings,
 } from "../settingsSlice";
-import { SettingsState } from "../types";
+import { SettingsState, ThemeMode } from "../types";
 
 export const useSettings = () => {
   const dispatch = useAppDispatch();
@@ -36,8 +36,12 @@ export const useSettings = () => {
     dispatch(toggleAutoUpdateScripts());
   };
 
-  // Theme settings
-  const switchTheme = (theme: "light" | "dark" | "system") => {
+  /**
+   * Switches the application's theme to the specified mode.
+   *
+   * @param theme - The desired theme mode to apply (e.g., 'system', 'light', 'dark').
+   */
+  const switchTheme = (theme: ThemeMode) => {
     dispatch(setTheme(theme));
   };
 
@@ -56,9 +60,6 @@ export const useSettings = () => {
   };
 
   // Computed values
-  const isDarkMode = settings.theme === "dark";
-  const isLightMode = settings.theme === "light";
-  const isSystemMode = settings.theme === "system";
   const executionTimeInSeconds = settings.maxExecutionTime / 1000;
 
   return {
@@ -66,9 +67,6 @@ export const useSettings = () => {
     ...settings,
 
     // Computed values
-    isDarkMode,
-    isLightMode,
-    isSystemMode,
     executionTimeInSeconds,
 
     // Actions

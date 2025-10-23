@@ -1,9 +1,9 @@
-import { act } from "@testing-library/react-native";
 import {
   createMockTab,
   defaultBrowserState,
   renderHookWithStore,
-} from "../../../../__tests__/utils/testUtils";
+} from "@/__tests__/utils/testUtils";
+import { act } from "@testing-library/react-native";
 import { useBrowser } from "../useBrowser";
 
 describe("useBrowser Hook", () => {

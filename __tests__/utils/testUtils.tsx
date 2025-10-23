@@ -6,17 +6,17 @@ import {
 import { ReactNode } from "react";
 import { Provider } from "react-redux";
 
-import browserReducer from "../../features/browser/browserSlice";
-import { BrowserState, BrowserTab } from "../../features/browser/types";
-import scriptsReducer from "../../features/scripts/scriptsSlice";
+import browserReducer from "@/src/features/browser/browserSlice";
+import { BrowserState, BrowserTab } from "@/src/features/browser/types";
+import scriptsReducer from "@/src/features/scripts/scriptsSlice";
 import {
   ScriptExecution,
   ScriptsState,
   UserScript,
-} from "../../features/scripts/types";
-import settingsReducer from "../../features/settings/settingsSlice";
-import { SettingsState } from "../../features/settings/types";
-import { RootState } from "../../store";
+} from "@/src/features/scripts/types";
+import settingsReducer from "@/src/features/settings/settingsSlice";
+import { SettingsState } from "@/src/features/settings/types";
+import { RootState } from "@/src/store";
 
 // Default states for each slice
 export const defaultBrowserState: BrowserState = {

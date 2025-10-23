@@ -1,3 +1,5 @@
+import { ThemeProvider } from "@/src/theme/ThemeContext";
+import { useTheme } from "@/src/theme/useTheme";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
@@ -17,16 +19,29 @@ const LoadingComponent = () => (
   </View>
 );
 
+const ThemedStatusBar = () => {
+  const theme = useTheme();
+  return <StatusBar style={theme.statusBarStyle} />;
+};
+
+const AppContent = () => {
+  return (
+    <SafeAreaProvider>
+      <ThemedStatusBar />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+      </Stack>
+    </SafeAreaProvider>
+  );
+};
+
 export default function RootLayout() {
   return (
     <Provider store={store}>
       <PersistGate loading={<LoadingComponent />} persistor={persistor}>
-        <SafeAreaProvider>
-          <StatusBar style="auto" />
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="index" />
-          </Stack>
-        </SafeAreaProvider>
+        <ThemeProvider>
+          <AppContent />
+        </ThemeProvider>
       </PersistGate>
     </Provider>
   );

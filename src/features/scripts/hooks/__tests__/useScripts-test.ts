@@ -1,11 +1,11 @@
-import { act } from "@testing-library/react-native";
 import {
   createMockExecution,
   createMockScript,
   defaultScriptsState,
   defaultSettingsState,
   renderHookWithStore,
-} from "../../../../__tests__/utils/testUtils";
+} from "@/__tests__/utils/testUtils";
+import { act } from "@testing-library/react-native";
 import { useScripts } from "../useScripts";
 
 describe("useScripts Hook", () => {

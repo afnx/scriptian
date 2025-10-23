@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { SettingsState } from "./types";
+import { SettingsState, ThemeMode } from "./types";
 
 const initialState: SettingsState = {
   scriptsEnabled: true,
@@ -29,7 +29,7 @@ const settingsSlice = createSlice({
       state.logExecutions = !state.logExecutions;
     },
 
-    setTheme: (state, action: PayloadAction<"light" | "dark" | "system">) => {
+    setTheme: (state, action: PayloadAction<ThemeMode>) => {
       state.theme = action.payload;
     },
 
