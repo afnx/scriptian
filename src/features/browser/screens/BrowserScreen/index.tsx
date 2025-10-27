@@ -1,5 +1,5 @@
 import { useTheme } from "@/src/theme/useTheme";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, StyleSheet, View } from "react-native";
 import {
   KeyboardEvents,
@@ -82,6 +82,14 @@ export default function BrowserScreen() {
     [height, offset, bottomContainerY]
   );
 
+  // Navigation handlers for WebView
+  const webviewRef = useRef<any>(null);
+
+  const goBack = () => webviewRef.current?.goBack?.();
+  const goForward = () => webviewRef.current?.goForward?.();
+  const reload = () => webviewRef.current?.reload?.();
+  const stopLoading = () => webviewRef.current?.stopLoading?.();
+
   return (
     <View style={{ flex: 1 }}>
       <SafeAreaView
@@ -93,6 +101,11 @@ export default function BrowserScreen() {
       >
         <View style={styles.webViewContainer}>
           <WebViewContainer
+            ref={webviewRef}
+            goBack={goBack}
+            goForward={goForward}
+            reload={reload}
+            stopLoading={stopLoading}
             bottomPadding={isKeyboardVisible ? 16 : 0}
             onScrollDirectionChange={setScrollDirection}
           />
@@ -101,11 +114,15 @@ export default function BrowserScreen() {
 
       <Animated.View style={[styles.bottomContainer, bottomContainerStyle]}>
         {showAddressBar && (
-          <AddressBar onFocusChange={onAddressBarFocusChange} />
+          <AddressBar
+            onReload={reload}
+            onStop={stopLoading}
+            onFocusChange={onAddressBarFocusChange}
+          />
         )}
         {!showAddressBar && <AddressBarDisplay />}
         {/* Toolbar contains the SafeAreaView */}
-        <Toolbar />
+        <Toolbar onBack={goBack} onForward={goForward} />
       </Animated.View>
     </View>
   );
