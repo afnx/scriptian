@@ -1,5 +1,5 @@
 import { useScripts } from "@/src/features/scripts/hooks/useScripts";
-import { useCallback, useRef } from "react";
+import { forwardRef, useCallback, useRef } from "react";
 import { StyleSheet, View, ViewProps } from "react-native";
 import {
   WebView,
@@ -24,95 +24,120 @@ function getInjectionScripts(
 type WebViewContainerProps = {
   bottomPadding?: number;
   onScrollDirectionChange?: (direction: "up" | "down") => void;
+  goBack: () => void;
+  goForward: () => void;
+  reload: () => void;
+  stopLoading: () => void;
 } & ViewProps;
 
-export default function WebViewContainer({
-  bottomPadding = 0,
-  style,
-  onScrollDirectionChange,
-  ...props
-}: WebViewContainerProps) {
-  const { activeTab, updateTabById } = useBrowser();
-  const { getScriptsByRunAt, logExecution } = useScripts();
-  const webviewRef = useRef<WebView>(null);
-
-  // Prepare URL
-  const url = activeTab?.url ? normalizeUrl(activeTab.url) : "about:blank";
-
-  // Inject scripts at different lifecycle points
-  const injectedJavaScriptBeforeContentLoaded = activeTab?.url
-    ? getInjectionScripts(url, "document-start", getScriptsByRunAt)
-    : "";
-  const injectedJavaScript = activeTab?.url
-    ? getInjectionScripts(url, "document-ready", getScriptsByRunAt)
-    : "";
-
-  // Handle navigation events
-  const onNavigationStateChange = useCallback(
-    (navState: WebViewNavigation) => {
-      if (!activeTab) return;
-      updateTabById(activeTab.id, {
-        url: navState.url,
-        title: navState.title ?? "",
-        canGoBack: navState.canGoBack,
-        canGoForward: navState.canGoForward,
-        isLoading: navState.loading,
-      });
+const WebViewContainer = forwardRef<WebView, WebViewContainerProps>(
+  function WebViewContainer(
+    {
+      bottomPadding = 0,
+      style,
+      onScrollDirectionChange,
+      goBack,
+      goForward,
+      reload,
+      stopLoading,
+      ...props
     },
-    [activeTab, updateTabById]
-  );
+    ref
+  ) {
+    const { activeTab, updateTabById } = useBrowser();
+    const { getScriptsByRunAt, logExecution } = useScripts();
 
-  // Handle JS execution results
-  const onMessage = useCallback((event: WebViewMessageEvent) => {
-    // TODO: Log execution results
-  }, []);
+    // Prepare URL
+    const url = activeTab?.url ? normalizeUrl(activeTab.url) : "about:blank";
 
-  // Inject CSS to add bottom padding to the body
-  const injectedCSS = `
+    // Inject scripts at different lifecycle points
+    const injectedJavaScriptBeforeContentLoaded = activeTab?.url
+      ? getInjectionScripts(url, "document-start", getScriptsByRunAt)
+      : "";
+    const injectedJavaScript = activeTab?.url
+      ? getInjectionScripts(url, "document-ready", getScriptsByRunAt)
+      : "";
+
+    // document-end: injected after page load
+    const documentEndScripts = activeTab?.url
+      ? getInjectionScripts(url, "document-end", getScriptsByRunAt)
+      : "";
+
+    // Handle navigation events
+    const onNavigationStateChange = useCallback(
+      (navState: WebViewNavigation) => {
+        if (!activeTab) return;
+        updateTabById(activeTab.id, {
+          url: navState.url,
+          title: navState.title ?? "",
+          canGoBack: navState.canGoBack,
+          canGoForward: navState.canGoForward,
+          isLoading: navState.loading,
+        });
+        // Inject document-end scripts when loading finishes
+        if (!navState.loading && documentEndScripts) {
+          (ref as React.RefObject<WebView>)?.current?.injectJavaScript(
+            documentEndScripts
+          );
+        }
+      },
+      [activeTab, updateTabById, documentEndScripts]
+    );
+
+    // Handle JS execution results
+    const onMessage = useCallback((event: WebViewMessageEvent) => {
+      // TODO: Log execution results
+    }, []);
+
+    // Inject CSS to add bottom padding to the body
+    const injectedCSS = `
     const style = document.createElement('style');
     style.innerHTML = 'body { padding-bottom: ${bottomPadding}px !important; box-sizing: border-box; }';
     document.head.appendChild(style);
   `;
 
-  const lastScrollY = useRef(0);
-  const lastDirection = useRef<"up" | "down" | null>(null); // pixels
-  const handleScroll = (event: any) => {
-    const currentY = event.nativeEvent.contentOffset?.y ?? 0;
-    const diff = currentY - lastScrollY.current;
+    const lastScrollY = useRef(0);
+    const lastDirection = useRef<"up" | "down" | null>(null); // pixels
+    const handleScroll = (event: any) => {
+      const currentY = event.nativeEvent.contentOffset?.y ?? 0;
+      const diff = currentY - lastScrollY.current;
 
-    if (Math.abs(diff) > SCROLL_DIRECTION_THRESHOLD) {
-      const newDirection = diff > 0 ? "down" : "up";
-      if (newDirection !== lastDirection.current) {
-        onScrollDirectionChange?.(newDirection);
-        lastDirection.current = newDirection;
-      }
-    }
-    lastScrollY.current = currentY;
-  };
-
-  return (
-    <View style={[styles.container, style]} {...props}>
-      <WebView
-        ref={webviewRef}
-        source={{ uri: url }}
-        injectedJavaScriptBeforeContentLoaded={
-          injectedJavaScriptBeforeContentLoaded
+      if (Math.abs(diff) > SCROLL_DIRECTION_THRESHOLD) {
+        const newDirection = diff > 0 ? "down" : "up";
+        if (newDirection !== lastDirection.current) {
+          onScrollDirectionChange?.(newDirection);
+          lastDirection.current = newDirection;
         }
-        injectedJavaScript={injectedJavaScript}
-        onNavigationStateChange={onNavigationStateChange}
-        onMessage={onMessage}
-        startInLoadingState={true}
-        allowsInlineMediaPlayback
-        javaScriptEnabled
-        domStorageEnabled
-        setSupportMultipleWindows={false}
-        allowsBackForwardNavigationGestures
-        originWhitelist={["*"]}
-        onScroll={handleScroll}
-      />
-    </View>
-  );
-}
+      }
+      lastScrollY.current = currentY;
+    };
+
+    return (
+      <View style={[styles.container, style]} {...props}>
+        <WebView
+          ref={ref}
+          source={{ uri: url }}
+          injectedJavaScriptBeforeContentLoaded={
+            injectedJavaScriptBeforeContentLoaded
+          }
+          injectedJavaScript={injectedJavaScript}
+          onNavigationStateChange={onNavigationStateChange}
+          onMessage={onMessage}
+          startInLoadingState={true}
+          allowsInlineMediaPlayback
+          javaScriptEnabled
+          domStorageEnabled
+          setSupportMultipleWindows={false}
+          allowsBackForwardNavigationGestures
+          originWhitelist={["*"]}
+          onScroll={handleScroll}
+        />
+      </View>
+    );
+  }
+);
+
+export default WebViewContainer;
 
 const styles = StyleSheet.create({
   container: {

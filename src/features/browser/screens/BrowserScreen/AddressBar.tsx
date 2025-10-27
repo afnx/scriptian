@@ -8,9 +8,15 @@ import { formatUrlForDisplay } from "../../utils/urlUtils";
 
 interface AddressBarProps {
   onFocusChange?: (isFocused: boolean) => void;
+  onReload: () => void;
+  onStop: () => void;
 }
 
-export default function AddressBar({ onFocusChange }: AddressBarProps) {
+export default function AddressBar({
+  onFocusChange,
+  onReload,
+  onStop,
+}: AddressBarProps) {
   const theme = useTheme();
   const { activeTab, navigateTab, activeTabId } = useBrowser();
 
@@ -74,13 +80,21 @@ export default function AddressBar({ onFocusChange }: AddressBarProps) {
       />
       <View style={[styles.iconRight]}>
         <IconButton
-          icon={activeTab?.url && !isFocused ? Icons.refresh : Icons.microphone}
+          icon={
+            activeTab?.isLoading
+              ? Icons.stop
+              : activeTab?.url && !isFocused
+              ? Icons.refresh
+              : Icons.microphone
+          }
           color={theme.colors.textSecondary}
           size={26}
           accessibilityLabel={activeTab?.url ? "Reload" : "Start voice search"}
           onPress={() => {
-            if (activeTabId && activeTab?.url) {
-              navigateTab(activeTabId, activeTab.url);
+            if (activeTab?.isLoading) {
+              onStop();
+            } else if (activeTabId && activeTab?.url) {
+              onReload();
             }
           }}
         />
