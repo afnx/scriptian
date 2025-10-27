@@ -10,7 +10,7 @@ import { useBrowser } from "../../hooks/useBrowser";
 import AddressBar from "./AddressBar";
 import AddressBarDisplay from "./AddressBarDisplay";
 import Toolbar from "./Toolbar";
-import WebViewComponent from "./WebViewComponent";
+import WebViewContainer from "./WebViewContainer";
 
 const KEYBOARD_OPENED_HEIGHT = 102;
 const KEYBOARD_CLOSED_HEIGHT = 0;
@@ -55,20 +55,6 @@ export default function BrowserScreen() {
     outputRange: [KEYBOARD_CLOSED_HEIGHT, KEYBOARD_OPENED_HEIGHT],
   });
 
-  const addressBarStyle = useMemo(
-    () => [
-      {
-        transform: [
-          {
-            translateY: Animated.add(height, offset),
-          },
-        ],
-      },
-      { backgroundColor: "white" },
-    ],
-    [height, offset]
-  );
-
   const bottomContainerY = useMemo(() => new Animated.Value(0), []);
 
   useEffect(() => {
@@ -78,6 +64,23 @@ export default function BrowserScreen() {
       useNativeDriver: true,
     }).start();
   }, [showBottomContainer, bottomContainerY]);
+
+  const bottomContainerStyle = useMemo(
+    () => [
+      {
+        transform: [
+          {
+            translateY: Animated.add(height, offset),
+          },
+          {
+            translateY: bottomContainerY,
+          },
+        ],
+      },
+      { backgroundColor: "white" },
+    ],
+    [height, offset, bottomContainerY]
+  );
 
   return (
     <View style={{ flex: 1 }}>
@@ -89,32 +92,18 @@ export default function BrowserScreen() {
         edges={["top"]}
       >
         <View style={styles.webViewContainer}>
-          <WebViewComponent
+          <WebViewContainer
             bottomPadding={isKeyboardVisible ? 16 : 0}
             onScrollDirectionChange={setScrollDirection}
           />
         </View>
       </SafeAreaView>
 
-      <Animated.View
-        style={[
-          styles.bottomContainer,
-          {
-            backgroundColor: "white",
-            transform: [{ translateY: bottomContainerY }],
-            position: "absolute",
-            left: 0,
-            right: 0,
-            bottom: 0,
-          },
-        ]}
-      >
-        <Animated.View style={addressBarStyle}>
-          {showAddressBar && (
-            <AddressBar onFocusChange={onAddressBarFocusChange} />
-          )}
-          {!showAddressBar && <AddressBarDisplay />}
-        </Animated.View>
+      <Animated.View style={[styles.bottomContainer, bottomContainerStyle]}>
+        {showAddressBar && (
+          <AddressBar onFocusChange={onAddressBarFocusChange} />
+        )}
+        {!showAddressBar && <AddressBarDisplay />}
         {/* Toolbar contains the SafeAreaView */}
         <Toolbar />
       </Animated.View>
@@ -132,5 +121,10 @@ const styles = StyleSheet.create({
   },
   bottomContainer: {
     width: "100%",
+    backgroundColor: "white",
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
