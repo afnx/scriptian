@@ -4,6 +4,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { ActivityIndicator, Text, View } from "react-native";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -40,7 +41,9 @@ export default function RootLayout() {
     <Provider store={store}>
       <PersistGate loading={<LoadingComponent />} persistor={persistor}>
         <ThemeProvider>
-          <AppContent />
+          <KeyboardProvider>
+            <AppContent />
+          </KeyboardProvider>
         </ThemeProvider>
       </PersistGate>
     </Provider>

@@ -27,6 +27,9 @@ export const Icons = {
   secure: "lock-closed" as const,
   insecure: "warning" as const,
   search: "search" as const,
+  microphone: "mic-outline" as const,
+  deleteInput: "close-circle" as const,
+  readerOutline: "reader-outline" as const,
 
   // Tab management
   closeTab: "close" as const,
@@ -54,8 +57,8 @@ export const Icons = {
   textSize: "text" as const,
 
   // Bookmarks and favorites
-  bookmark: "bookmark-outline" as const,
-  bookmarkFilled: "bookmark" as const,
+  bookmark: "book-outline" as const,
+  bookmarkFilled: "book" as const,
   star: "star-outline" as const,
   starFilled: "star" as const,
 

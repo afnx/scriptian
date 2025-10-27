@@ -105,13 +105,13 @@ export const formatUrlForDisplay = (url: string): string => {
     const urlObj = new URL(url);
     let displayUrl = urlObj.hostname;
 
-    if (urlObj.pathname !== "/") {
-      displayUrl += urlObj.pathname;
-    }
+    // if (urlObj.pathname !== "/") {
+    //   displayUrl += urlObj.pathname;
+    // }
 
-    if (urlObj.search) {
-      displayUrl += urlObj.search;
-    }
+    // if (urlObj.search) {
+    //   displayUrl += urlObj.search;
+    // }
 
     return displayUrl;
   } catch {
