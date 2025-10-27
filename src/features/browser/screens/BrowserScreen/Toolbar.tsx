@@ -6,7 +6,13 @@ import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useBrowser } from "../../hooks/useBrowser";
 
-export default function Toolbar() {
+type ToolbarProps = {
+  onBack: () => void;
+  onForward: () => void;
+  onShare?: () => void;
+};
+
+export default function Toolbar({ onBack, onForward, onShare }: ToolbarProps) {
   const theme = useTheme();
   const {
     activeTab,
@@ -25,9 +31,7 @@ export default function Toolbar() {
         size={26}
         disabled={!activeTab?.canGoBack}
         accessibilityLabel="Back"
-        onPress={() => {
-          // WebView navigation logic will go here
-        }}
+        onPress={onBack}
       />
       <IconButton
         icon={Icons.forward}
@@ -35,18 +39,14 @@ export default function Toolbar() {
         size={26}
         disabled={!activeTab?.canGoForward}
         accessibilityLabel="Forward"
-        onPress={() => {
-          // WebView navigation logic will go here
-        }}
+        onPress={onForward}
       />
       <IconButton
         icon={Icons.share}
         color={theme.colors.textPrimary}
         size={26}
         accessibilityLabel="Share"
-        onPress={() => {
-          // More actions (settings, share, etc.)
-        }}
+        onPress={onShare}
       />
       <IconButton
         icon={
