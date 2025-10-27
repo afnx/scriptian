@@ -10,7 +10,7 @@ import { useBrowser } from "../../hooks/useBrowser";
 import AddressBar from "./AddressBar";
 import AddressBarDisplay from "./AddressBarDisplay";
 import Toolbar from "./Toolbar";
-import WebViewComponent from "./WebViewComponent";
+import WebViewContainer from "./WebViewContainer";
 
 const KEYBOARD_OPENED_HEIGHT = 102;
 const KEYBOARD_CLOSED_HEIGHT = 0;
@@ -89,7 +89,7 @@ export default function BrowserScreen() {
         edges={["top"]}
       >
         <View style={styles.webViewContainer}>
-          <WebViewComponent
+          <WebViewContainer
             bottomPadding={isKeyboardVisible ? 16 : 0}
             onScrollDirectionChange={setScrollDirection}
           />
